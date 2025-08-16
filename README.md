@@ -1,8 +1,26 @@
-# 🚨 SECURITY ALERT - 즉시 조치 필요
+# 🤖 NP Signal Trading Platform
 
-## ⚠️ 중요한 보안 문제가 해결되었습니다
+AI-powered trading signal analysis and portfolio management system with microservices architecture.
 
-이 프로젝트에서 **민감한 API 키와 토큰이 노출**되었던 문제를 해결했습니다.
+## 🏗️ Microservices Architecture
+
+This project has been restructured into a microservices architecture:
+
+### 🎯 Main Project (NP_Signal)
+- **Core trading system functionality**
+- **Web interfaces and APIs**  
+- **Portfolio and risk management**
+- **Integration with existing services**
+
+### 🤖 External Signal Processor (Separate Microservice)
+- **Repository**: [https://github.com/ibnetsoft/geminisignal](https://github.com/ibnetsoft/geminisignal)
+- **Deployment**: Independent Cloud Run service
+- **Functionality**: Real-time Firestore signal monitoring + AI analysis + Telegram notifications
+- **Communication**: Firestore-based loose coupling
+
+## ⚠️ Security Notice
+
+민감한 API 키와 토큰 노출 문제가 해결되었습니다.
 
 ### 🔒 완료된 보안 조치
 
