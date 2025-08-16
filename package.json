@@ -1,8 +1,8 @@
 {
-  "name": "js-character-generator",
-  "version": "0.1.0",
-  "description": "A simple Genkit app to generate fantasy characters",
-  "main": "dist/index.js",
+  "name": "np-signal-trading-platform",
+  "version": "1.0.0",
+  "description": "AI-powered trading signal analysis and portfolio management system",
+  "main": "signal-only.js",
   "engines": {
     "node": "18"
   },
@@ -10,7 +10,7 @@
     "build": "npx tsc",
     "genkit:dev": "npx genkit start -- npx tsx --watch index.ts",
     "start": "npx ts-node index.ts",
-    "dev": "npx tsx --watch index.ts",
+    "dev": "npx tsx --watch index.js",
     "start:prod": "node dist/index.js",
     "firebase:emulators": "firebase emulators:start --only firestore",
     "firebase:emulators:ui": "firebase emulators:start --only firestore,ui",
@@ -32,10 +32,15 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "health": "curl -f http://localhost:3000/health || exit 1",
-    "task:pre-check": "node task-manager-ai/pre-work-check.js",
-    "task:post-check": "node task-manager-ai/post-work-check.js",
+    "task:status": "task-master status",
+    "task:add": "task-master add",
+    "mcp:status": "node .taskmaster/mcp-setup.js status",
+    "mcp:setup": "node .taskmaster/mcp-setup.js recommend",
+    "mcp:help": "node .taskmaster/mcp-setup.js help",
     "task:validate": "node scripts/validate-existing-work.js",
-    "task:integration-test": "node scripts/integration-test.js"
+    "task:integration-test": "node scripts/integration-test.js",
+    "trade:test": "node scripts/metaapi-trade-test.js",
+    "trade:connect": "node scripts/metaapi-trade-test.js"
   },
   "keywords": [],
   "author": "",
@@ -70,6 +75,7 @@
     "genkit": "^1.15.5",
     "helmet": "^8.1.0",
     "metaapi.cloud-sdk": "^29.3.1",
+    "node-fetch": "^3.3.2",
     "openai": "^4.52.7",
     "telegraf": "^4.16.3",
     "tough-cookie": "^4.1.3"

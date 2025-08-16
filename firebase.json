@@ -1,8 +1,7 @@
 {
   "functions": {
     "source": ".",
-    "runtime": "nodejs18",
-    "predeploy": "npm run build"
+    "runtime": "nodejs18"
   },
   "firestore": {
     "rules": "firestore.rules",
