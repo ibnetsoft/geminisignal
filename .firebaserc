@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "pipmaker-signals"
+  },
+  "targets": {
+    "pipmaker-signals": {
+      "hosting": {
+        "frontend": [
+          "pipmaker-signals"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
