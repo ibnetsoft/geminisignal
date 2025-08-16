@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NP Signal - 어드민 대시보드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .api-key-input {
+            font-family: 'Courier New', monospace;
+            background: #f1f2f6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected {
+            background: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+
+        .status-disconnected {
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+
+        .learning-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-left: 5px solid #e67e22;
+        }
+
+        .template-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+
+        .template-item h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .test-area {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 5px solid #fd79a8;
+        }
+
+        .chat-test {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 300px;
+            border: 2px dashed #ddd;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .message.user {
+            background: #e3f2fd;
+            text-align: right;
+        }
+
+        .message.ai {
+            background: #f1f8e9;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .learning-section,
+            .test-area {
+                grid-column: 1;
+            }
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 NP Signal Admin Dashboard</h1>
+            <p>ChatGPT API 키 관리 및 고객 응대 학습 시스템</p>
+        </div>
+
+        <div class="main-content">
+            <!-- API 키 관리 섹션 -->
+            <div class="section">
+                <h2>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-2a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    API 키 관리
+                </h2>
+                
+                <div class="form-group">
+                    <label for="trading-api-key">
+                        <span class="status-indicator status-disconnected"></span>
+                        거래용 ChatGPT API 키
+                    </label>
+                    <input 
+                        type="password" 
+                        id="trading-api-key" 
+                        class="api-key-input"
+                        placeholder="sk-..."
+                        autocomplete="off"
+                    >
+                    <small style="color: #6c757d; margin-top: 5px; display: block;">
+                        MetaAPI 거래 실행 전용 API 키
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="customer-api-key">
+                        <span class="status-indicator status-disconnected"></span>
+                        고객 응대용 ChatGPT API 키
+                    </label>
+                    <input 
+                        type="password" 
+                        id="customer-api-key" 
+                        class="api-key-input"
+                        placeholder="sk-..."
+                        autocomplete="off"
+                    >
+                    <small style="color: #6c757d; margin-top: 5px; display: block;">
+                        유저 상담, 응대, 경고 메시지 전용 API 키
+                    </small>
+                </div>
+
+                <button class="btn btn-success" onclick="saveApiKeys()">
+                    💾 API 키 저장
+                </button>
+                <button class="btn btn-warning" onclick="testConnection()">
+                    🔍 연결 테스트
+                </button>
+            </div>
+
+            <!-- 응대 스타일 설정 -->
+            <div class="section">
+                <h2>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    응대 스타일 설정
+                </h2>
+
+                <div class="form-group">
+                    <label for="tone-style">응대 톤</label>
+                    <select id="tone-style">
+                        <option value="friendly">친근한 스타일</option>
+                        <option value="professional">전문적인 스타일</option>
+                        <option value="formal">공식적인 스타일</option>
+                        <option value="casual">캐주얼 스타일</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="greeting-msg">기본 인사말</label>
+                    <textarea 
+                        id="greeting-msg" 
+                        rows="3"
+                        placeholder="안녕하세요! NP Signal에 오신 것을 환영합니다..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="closing-msg">기본 마무리 멘트</label>
+                    <textarea 
+                        id="closing-msg" 
+                        rows="3"
+                        placeholder="더 궁금한 사항이 있으시면 언제든 문의해주세요..."
+                    ></textarea>
+                </div>
+
+                <button class="btn btn-success" onclick="saveResponseStyle()">
+                    💾 스타일 저장
+                </button>
+            </div>
+
+            <!-- 학습 관리 섹션 -->
+            <div class="section learning-section">
+                <h2>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path>
+                    </svg>
+                    고객 응대 학습 관리
+                </h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #495057;">⚠️ 경고 메시지 템플릿</h3>
+                        
+                        <div class="template-item">
+                            <h4>리스크 경고 (높음)</h4>
+                            <textarea rows="3" placeholder="⚠️ 높은 리스크 거래입니다. 신중히 검토 후 진행하세요..."></textarea>
+                        </div>
+
+                        <div class="template-item">
+                            <h4>거래 한도 초과</h4>
+                            <textarea rows="3" placeholder="💰 일일 거래 한도를 초과했습니다. 내일 다시 시도해주세요..."></textarea>
+                        </div>
+
+                        <div class="template-item">
+                            <h4>시장 변동성 경고</h4>
+                            <textarea rows="3" placeholder="📈 현재 시장 변동성이 높습니다. 주의 깊게 모니터링하세요..."></textarea>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #495057;">❓ FAQ 및 응답 가이드</h3>
+                        
+                        <div class="template-item">
+                            <h4>계정 인증 문의</h4>
+                            <textarea rows="3" placeholder="계정 인증은 보안을 위해 필요합니다. 신분증을 업로드해주세요..."></textarea>
+                        </div>
+
+                        <div class="template-item">
+                            <h4>출금 지연 문의</h4>
+                            <textarea rows="3" placeholder="출금은 영업일 기준 1-3일 소요됩니다. 조금만 기다려주세요..."></textarea>
+                        </div>
+
+                        <div class="template-item">
+                            <h4>거래 오류 문의</h4>
+                            <textarea rows="3" placeholder="거래 오류가 발생했다면 즉시 고객센터로 연락해주세요..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="saveTemplates()">
+                        💾 템플릿 저장
+                    </button>
+                    <button class="btn" onclick="addNewTemplate()">
+                        ➕ 새 템플릿 추가
+                    </button>
+                </div>
+            </div>
+
+            <!-- 실시간 테스트 섹션 -->
+            <div class="section test-area">
+                <h2>
+                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+                    </svg>
+                    실시간 ChatGPT 응대 테스트
+                </h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">테스트 시나리오 선택:</label>
+                        <select id="test-scenario" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                            <option value="greeting">신규 유저 인사</option>
+                            <option value="trading-risk">거래 리스크 경고</option>
+                            <option value="account-issue">계정 문제 상담</option>
+                            <option value="withdrawal">출금 문의</option>
+                            <option value="technical">기술적 문제</option>
+                        </select>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px;">사용자 메시지:</label>
+                            <textarea 
+                                id="user-test-message" 
+                                rows="4" 
+                                placeholder="테스트할 사용자 메시지를 입력하세요..."
+                                style="width: 100%; padding: 10px;"
+                            ></textarea>
+                        </div>
+
+                        <button class="btn" onclick="sendTestMessage()">
+                            🚀 응대 테스트
+                        </button>
+                    </div>
+
+                    <div class="chat-test" id="chat-test-area">
+                        <p style="text-align: center; color: #6c757d; margin-top: 100px;">
+                            💬 여기에 ChatGPT 응답이 표시됩니다
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 키 저장
+        function saveApiKeys() {
+            const tradingKey = document.getElementById('trading-api-key').value;
+            const customerKey = document.getElementById('customer-api-key').value;
+            
+            if (!tradingKey || !customerKey) {
+                alert('❌ 모든 API 키를 입력해주세요.');
+                return;
+            }
+
+            // 여기에 실제 저장 로직 구현
+            fetch('/api/admin/save-keys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tradingApiKey: tradingKey,
+                    customerApiKey: customerKey
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ API 키가 성공적으로 저장되었습니다!');
+                    updateConnectionStatus(true);
+                } else {
+                    alert('❌ 저장 실패: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('❌ 네트워크 오류: ' + error.message);
+            });
+        }
+
+        // 연결 테스트
+        function testConnection() {
+            alert('🔍 연결 테스트를 시작합니다...');
+            
+            fetch('/api/admin/test-connection', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ 모든 API 키 연결이 정상입니다!');
+                    updateConnectionStatus(true);
+                } else {
+                    alert('❌ 연결 실패: ' + data.error);
+                    updateConnectionStatus(false);
+                }
+            })
+            .catch(error => {
+                alert('❌ 테스트 실패: ' + error.message);
+                updateConnectionStatus(false);
+            });
+        }
+
+        // 연결 상태 업데이트
+        function updateConnectionStatus(connected) {
+            const indicators = document.querySelectorAll('.status-indicator');
+            indicators.forEach(indicator => {
+                indicator.className = connected ? 
+                    'status-indicator status-connected' : 
+                    'status-indicator status-disconnected';
+            });
+        }
+
+        // 응대 스타일 저장
+        function saveResponseStyle() {
+            const style = {
+                tone: document.getElementById('tone-style').value,
+                greeting: document.getElementById('greeting-msg').value,
+                closing: document.getElementById('closing-msg').value
+            };
+
+            fetch('/api/admin/save-style', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(style)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ 응대 스타일이 저장되었습니다!');
+                } else {
+                    alert('❌ 저장 실패: ' + data.error);
+                }
+            });
+        }
+
+        // 템플릿 저장
+        function saveTemplates() {
+            const templates = [];
+            document.querySelectorAll('.template-item').forEach(item => {
+                const title = item.querySelector('h4').textContent;
+                const content = item.querySelector('textarea').value;
+                templates.push({ title, content });
+            });
+
+            fetch('/api/admin/save-templates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ templates })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ 템플릿이 저장되었습니다!');
+                } else {
+                    alert('❌ 저장 실패: ' + data.error);
+                }
+            });
+        }
+
+        // 새 템플릿 추가
+        function addNewTemplate() {
+            const title = prompt('새 템플릿 제목을 입력하세요:');
+            if (title) {
+                const templateHtml = `
+                    <div class="template-item">
+                        <h4>${title}</h4>
+                        <textarea rows="3" placeholder="템플릿 내용을 입력하세요..."></textarea>
+                    </div>
+                `;
+                document.querySelector('.learning-section > div > div').insertAdjacentHTML('beforeend', templateHtml);
+            }
+        }
+
+        // 테스트 메시지 전송
+        function sendTestMessage() {
+            const scenario = document.getElementById('test-scenario').value;
+            const message = document.getElementById('user-test-message').value;
+            
+            if (!message) {
+                alert('❌ 테스트 메시지를 입력해주세요.');
+                return;
+            }
+
+            const chatArea = document.getElementById('chat-test-area');
+            chatArea.innerHTML = '<p style="text-align: center; color: #6c757d;">🔄 ChatGPT 응답 중...</p>';
+
+            fetch('/api/admin/test-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    scenario: scenario,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    chatArea.innerHTML = `
+                        <div class="message user">
+                            <strong>사용자:</strong> ${message}
+                        </div>
+                        <div class="message ai">
+                            <strong>ChatGPT 응답:</strong> ${data.response}
+                        </div>
+                    `;
+                } else {
+                    chatArea.innerHTML = `<p style="color: red;">❌ 테스트 실패: ${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                chatArea.innerHTML = `<p style="color: red;">❌ 네트워크 오류: ${error.message}</p>`;
+            });
+        }
+
+        // 페이지 로드 시 기존 설정 불러오기
+        window.onload = function() {
+            fetch('/api/admin/load-settings')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 기존 설정 값들을 폼에 로드
+                        if (data.settings.toneStyle) {
+                            document.getElementById('tone-style').value = data.settings.toneStyle;
+                        }
+                        if (data.settings.greeting) {
+                            document.getElementById('greeting-msg').value = data.settings.greeting;
+                        }
+                        if (data.settings.closing) {
+                            document.getElementById('closing-msg').value = data.settings.closing;
+                        }
+                    }
+                });
+        };
+    </script>
+</body>
+</html>

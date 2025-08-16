@@ -180,15 +180,10 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-// Firebase Functions 용 export (프로덕션에서 자동으로 활성화)
-const {onRequest} = require('firebase-functions/v2/https');
-const {onDocumentCreated} = require('firebase-functions/v2/firestore');
+// Firebase Functions v2 (2nd Gen) 방식 
+const { onRequest } = require('firebase-functions/v2/https');
 
-exports.api = onRequest({
-  timeoutSeconds: 540,
-  memory: '2GiB',
-  region: 'asia-northeast1'
-}, async (req, res) => {
+exports.api = onRequest(async (req, res) => {
   // 첫 요청 시에만 서비스 초기화
   if (!signalWatcher) {
     await initializeServices();
@@ -197,18 +192,35 @@ exports.api = onRequest({
   return app(req, res);
 });
 
-// Firestore 트리거 함수들
-exports.onSignalCreate = onDocumentCreated({
-  document: 'signals/{signalId}',
-  timeoutSeconds: 60,
-  memory: '1GiB',
-  region: 'asia-northeast1'
-}, async (event) => {
-  console.log('🔥 새로운 시그널 트리거:', event.params.signalId);
-  
-  // 추가적인 처리가 필요한 경우 여기에 구현
-  const signalData = event.data?.data();
-  console.log('📊 시그널 데이터:', signalData);
+// Health check 함수
+exports.health = onRequest((req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'NP Signal Trading Platform - SignalWatcher',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
+// SignalWatcher 상태 체크 함수
+exports.signalStatus = onRequest(async (req, res) => {
+  try {
+    if (!signalWatcher) {
+      await initializeServices();
+    }
+    
+    const status = signalWatcher ? signalWatcher.getStatus() : { status: 'not_initialized' };
+    res.json({
+      ...status,
+      timestamp: new Date().toISOString(),
+      service: 'SignalWatcher'
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // For local development, export the app

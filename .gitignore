@@ -37,6 +37,8 @@ build/
 *.js
 !webpack.config.js
 !jest.config.js
+!functions-test.js
+!signal-only.js
 
 # Logs
 logs/

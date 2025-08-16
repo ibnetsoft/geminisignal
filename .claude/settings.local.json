@@ -1,7 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(set PORT=3000)",
+      "Bash(firebase auth:login:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase firestore:data:*)",
+      "Bash(firebase functions:log:*)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(npm test)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase functions:delete:*)",
+      "Bash(firebase functions:list:*)",
+      "Bash(FUNCTIONS_EMULATOR=true node -pe \"const m = require(''./signal-only.js''); console.log(''api:'', typeof m.api); console.log(''onSignalCreate:'', typeof m.onSignalCreate); process.exit(0);\")",
+      "Bash(firebase functions:config:get:*)",
+      "Bash(gcloud functions list:*)",
+      "Bash(firebase open:*)",
+      "Bash(git add:*)",
+      "Bash(firebase use:*)"
     ],
     "deny": [],
     "ask": []

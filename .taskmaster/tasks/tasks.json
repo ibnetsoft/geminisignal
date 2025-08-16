@@ -1,0 +1,66 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "마이크로서비스 분리 완료",
+        "description": "Signal Processor를 독립 마이크로서비스로 분리하고 메인 프로젝트 정리",
+        "details": "Signal Processor를 별도 저장소(github.com/ibnetsoft/geminisignal)로 분리, Cloud Run 독립 배포, 메인 프로젝트에서 관련 파일 제거 및 정리",
+        "testStrategy": "Signal Processor 독립 배포 확인, 텔레그램 알림 테스트, Firestore 연결 테스트",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "메인 프로젝트 기능 개선",
+        "description": "코어 거래 시스템, 웹 인터페이스, 포트폴리오 관리 기능 강화",
+        "details": "기존 거래 시스템 최적화, 웹 인터페이스 개선, 포트폴리오 성과 분석 고도화, 리스크 관리 시스템 강화",
+        "testStrategy": "각 기능별 단위 테스트, 통합 테스트, 사용자 시나리오 테스트",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "AI 서비스 최적화",
+        "description": "다중 AI 모델 통합 및 성능 최적화",
+        "details": "Gemini, GPT, Claude 등 다중 AI 모델 오케스트레이션 개선, 응답 속도 최적화, 비용 효율성 개선",
+        "testStrategy": "AI 응답 품질 테스트, 성능 벤치마크, 비용 분석",
+        "priority": "medium",
+        "dependencies": [2],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "모니터링 및 분석 대시보드",
+        "description": "실시간 모니터링 및 성과 분석 대시보드 구축",
+        "details": "거래 성과, 포트폴리오 상태, 시스템 헬스 모니터링. 실시간 차트, 알림 시스템, 리포트 생성 기능",
+        "testStrategy": "실시간 데이터 업데이트 테스트, 차트 렌더링 성능 테스트, 알림 시스템 테스트",
+        "priority": "medium",
+        "dependencies": [2],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "보안 및 인증 시스템 강화",
+        "description": "사용자 인증, 권한 관리, API 보안 강화",
+        "details": "OAuth 2.0 인증, 역할 기반 접근 제어, API 키 관리, 감사 로그 시스템 구현",
+        "testStrategy": "보안 취약점 스캔, 인증 플로우 테스트, 권한 검증 테스트",
+        "priority": "high",
+        "dependencies": [2],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-16T02:30:00.000Z",
+      "updated": "2025-08-16T02:30:00.000Z",
+      "description": "Main project tasks for NP Signal Trading Platform"
+    }
+  }
+}
